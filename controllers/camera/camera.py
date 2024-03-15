@@ -9,6 +9,7 @@ from ..evaluationCriteria.criteriaFactory import CriteriaFactory
 # from roboflow import Roboflow
 import supervision as sv
 import cv2
+import threading
 
 class Camera:
     def __init__(self, ID=None, camera_name=None, camera_URL=None, evaluation_criteria=None):
@@ -217,12 +218,30 @@ class Camera:
         TypeError: If any frame is not of type np.ndarray.
 
     """
+    # async def analysis_frame(self):
+    #     try:
+    #         for criteria in self.__evaluation_criteria:
+    #             criteria_object = self.__criteria_maker.createCriteria(criteria)
+    #             criteria_object.detect(self.get_camera_ID(), self.get_camera_URL())
+
+    #     except Exception as e:
+    #         print("Error processing camera ID:", self.get_camera_ID(), e)
+    #         return None
+
+
     async def analysis_frame(self):
         try:
-            print("hi", )
+            threads = []
             for criteria in self.__evaluation_criteria:
+                print("hi")
                 criteria_object = self.__criteria_maker.createCriteria(criteria)
-                criteria_object.detect(self.get_camera_ID(), self.get_camera_URL())
+                thread = threading.Thread(target=criteria_object.detect, args=(self.get_camera_ID(), self.get_camera_URL()))
+                thread.start()
+                threads.append(thread)
+
+            # Wait for all threads to finish
+            for thread in threads:
+                thread.join()
 
         except Exception as e:
             print("Error processing camera ID:", self.get_camera_ID(), e)

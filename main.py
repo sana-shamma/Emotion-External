@@ -2,8 +2,8 @@ import threading
 import asyncio
 from controllers.camera.camera import Camera
 
-c1 = Camera(3, "test3", "rtsp://192.168.191.170:8080/h264_ulaw.sdp", ["uniform"])
-c2 = Camera(2, "test2", "rtsp://192.168.191.114:8080/h264_ulaw.sdp", ["emotion"])
+c1 = Camera(3, "test3", "rtsp://192.168.191.170:8080/h264_ulaw.sdp", ["uniform", "emotion"])
+c2 = Camera(2, "test2", "rtsp://192.168.191.114:8080/h264_ulaw.sdp", ["uniform"])
 
 async def process_camera(camera):
     await camera.analysis_frame()
@@ -15,7 +15,7 @@ def run_event_loop():
 
 def process_cameras():
     threads = []
-    cameras = [c1, c2]
+    cameras = [c1,c2]
 
     for camera in cameras:
         thread = threading.Thread(target=asyncio.run, args=(process_camera(camera),))
